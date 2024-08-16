@@ -20,6 +20,8 @@ import './tasks/accounts'
 import './tasks/archive_scan'
 import './tasks/save'
 import './tasks/seed'
+import './tasks/registry'
+import { ethers } from 'ethers'
 
 // Load environment variables from .env file. Suppress warnings using silent
 // if this file is missing. dotenv will never modify any environment variables
@@ -40,15 +42,33 @@ export const archivedDeploymentPath = './deployments/archive'
 
 const config: HardhatUserConfig = {
   networks: {
+    // hardhat: {
+    //   saveDeployments: false,
+    //   tags: ['test', 'legacy', 'use_root'],
+    //   allowUnlimitedContractSize: false,
+    // },
     hardhat: {
-      saveDeployments: false,
-      tags: ['test', 'legacy', 'use_root'],
+      saveDeployments: true,
+      tags: ['test', 'use_root'],
       allowUnlimitedContractSize: false,
+      // mining: {
+      //   auto: true,
+      //   interval: 5000 // 你可以根据需要设置这个间隔时间
+      // }
+    },
+    'smartbch-amber': {
+      url: 'https://rpc-testnet.smartbch.org',
+      accounts: real_accounts,
+      chainId: 10001,
+      live: true,
+      saveDeployments: true,
+      tags: ['test', 'use_root'],
+      gasPrice: 1046739556,
     },
     localhost: {
       url: 'http://127.0.0.1:8545',
-      saveDeployments: false,
-      tags: ['test', 'legacy', 'use_root'],
+      saveDeployments: true,
+      tags: ['test', 'use_root'],
     },
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,

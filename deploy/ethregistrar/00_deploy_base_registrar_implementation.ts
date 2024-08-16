@@ -8,7 +8,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments, network } = hre
   const { deploy, fetchIfDifferent } = deployments
   const { deployer, owner } = await getNamedAccounts()
-
   if (!network.tags.use_root) {
     return true
   }
@@ -21,7 +20,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [registry.address, namehash.hash('eth')],
     log: true,
   }
-
   const bri = await deploy('BaseRegistrarImplementation', deployArgs)
   if (!bri.newlyDeployed) return
 

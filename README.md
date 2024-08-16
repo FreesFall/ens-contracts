@@ -170,3 +170,19 @@ yarn pub
 ### Release flow
 
 Smart contract development tends to take a long release cycle. To prevent unnecessary dependency conflicts, please create a feature branch (`features/$BRNACH_NAME`) and raise a PR against the feature branch. The feature branch must be merged into master only after the smart contracts are deployed to the Ethereum mainnet.
+
+### 执行流程
+
+本地部署
+npm run deploy:hardhat
+
+启动 harhat 环境，并部署
+npm run start:hardhat
+
+测试网部署(测试网 URL:https://rpc-testnet.smartbch.org)
+如果需要重新部署，需要删除 deployments/smartbch-amber 指定文件夹
+npm run deploy:smartbch-amber
+
+测试网部署/本地 hardhat 启动后，可注册域名
+npx hardhat --network localhost registry --name test --address 0xCcB22e...
+npx hardhat --network smartbch-amber registry --name test --address 0xCcB22e...

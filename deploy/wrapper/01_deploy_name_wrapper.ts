@@ -52,6 +52,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const artifact = await deployments.getArtifact('INameWrapper')
   const interfaceId = computeInterfaceId(new Interface(artifact.abi))
+
+  console.log('ethers.provider.connection.ur', ethers.provider.connection.url)
+  console.log('ethers.provider.connection.ur', ethers.provider.network)
+
   const providerWithEns = new ethers.providers.StaticJsonRpcProvider(
     ethers.provider.connection.url,
     { ...ethers.provider.network, ensAddress: registry.address },

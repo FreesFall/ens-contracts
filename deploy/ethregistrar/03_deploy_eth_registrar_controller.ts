@@ -32,7 +32,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [
       registrar.address,
       priceOracle.address,
-      60,
+      1,
       86400,
       reverseRegistrar.address,
       nameWrapper.address,

@@ -4,13 +4,15 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types'
 
 const ZERO_HASH =
   '0x0000000000000000000000000000000000000000000000000000000000000000'
+const ETH_HASH =
+  '0x4f5b812789fc606be1b3b16908db13fc7a9adf7ca72641f84d75b47069d3d7f0'
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  console.log('starting')
   const { getNamedAccounts, deployments, network } = hre
   const { deploy, run } = deployments
   const { deployer, owner } = await getNamedAccounts()
-
+  console.log('deployer', owner)
+  console.log('deployer', deployer)
   if (network.tags.legacy) {
     const contract = await deploy('LegacyENSRegistry', {
       from: deployer,
@@ -53,9 +55,26 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     })
   }
 
+  const registry = await ethers.getContract('ENSRegistry')
+  const tx2 = await registry.setSubnodeOwner(ZERO_HASH, ETH_HASH, deployer)
+  console.log(`Setting owner of .eth node to ${deployer} (tx: ${tx2.hash})...`)
+  await tx2.wait()
+
+  const tx3 = await registry.setSubnodeOwner(
+    ethers.utils.namehash('eth'),
+    ethers.utils.id('resolver'),
+    owner,
+  )
+  console.log(
+    `Setting owner of resolver.eth node to ${owner} (tx: ${tx2.hash})...`,
+  )
+  await tx3.wait()
+  console.log('resolver=========:', ethers.utils.namehash('resolver.eth'))
+
   if (!network.tags.use_root) {
     const registry = await ethers.getContract('ENSRegistry')
     const rootOwner = await registry.owner(ZERO_HASH)
+
     switch (rootOwner) {
       case deployer:
         const tx = await registry.setOwner(ZERO_HASH, owner, { from: deployer })

@@ -10,7 +10,10 @@
     "format": "prettier --write .",
     "prepublishOnly": "yarn build",
     "pub": "yarn publish --access public",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "start:hardhat": "npx hardhat node",
+    "deploy:hardhat": "npx hardhat --network hardhat deploy",
+    "deploy:smartbch-amber": "npx hardhat --network smartbch-amber deploy"
   },
   "files": [
     "build",
