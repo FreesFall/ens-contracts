@@ -193,8 +193,9 @@ npm run deploy:smartbch-amber
 ```
 
 测试网部署/本地 hardhat 启动后，可注册域名
+测试网可能遇到证书问题，设置下 set NODE_TLS_REJECT_UNAUTHORIZED=0
 
 ```
-npx hardhat --network localhost registry --name test --address 0xCcB22e...
-npx hardhat --network smartbch-amber registry --name test --address 0xCcB22e...
+npx hardhat --network localhost registry --name test
+npx hardhat --network smartbch-amber registry --name test
 ```

@@ -4,11 +4,11 @@ import * as envfile from 'envfile'
 
 task('registry', 'Deploys contracts with custom parameters')
   .addOptionalParam('name', 'The domain name to register')
-  .addOptionalParam('address', 'Domain owner address')
-  .setAction(async ({ name, address }, hre) => {
+  // .addOptionalParam('address', 'Domain owner address')
+  .setAction(async ({ name, address }, hre: any) => {
     const { ethers } = hre
     const ensRegistry = await ethers.getContract('ENSRegistry')
-    const { owner } = await hre.getNamedAccounts()
+    const { deployer, owner } = await hre.getNamedAccounts()
 
     if (
       (await ensRegistry.owner(ethers.utils.namehash('resolver.eth'))) === owner
@@ -26,8 +26,7 @@ task('registry', 'Deploys contracts with custom parameters')
         `====================domainName register=======================`,
       )
       const domainNameToUse = name || 'defaultDomain'
-      const ownerAddress =
-        address || '0xb41981438e18A686E571f5f5f38eA6b357d83dfe'
+      const ownerAddress = deployer
       const duration = 31536000
       const secret = ethers.utils.hexlify(ethers.utils.randomBytes(32))
       const resolverAddress = addr
@@ -54,6 +53,21 @@ task('registry', 'Deploys contracts with custom parameters')
         ethers.utils.namehash(`${domainNameToUse}.eth`),
       )
       console.log(`${domainNameToUse}.eth Resolution address :(${ret})`)
+
+      // -----------------验证注册结果-------------------------
+      //根据反向解释器节点，获取地址的域名 addr.reverse
+      const reverseRegistrar = await ethers.getContract('ReverseRegistrar')
+      const reverseNode = await reverseRegistrar.node(ownerAddress)
+      // 获取反向解析器合约地址
+      const reverseNode_resolverAddress = await ensRegistry.resolver(
+        reverseNode,
+      )
+      console.log('reverseNode_resolverAddress : ', reverseNode_resolverAddress)
+      const reverseNode_resolver = await (
+        await ethers.getContractFactory('PublicResolver')
+      ).attach(reverseNode_resolverAddress)
+      const ensName = await reverseNode_resolver.name(reverseNode)
+      console.log(`${ownerAddress} domain name : ${ensName}`)
     } else {
       console.log(
         'resolver.eth is not owned by the owner address, not setting resolver',

@@ -1,3 +1,4 @@
+import { namehash } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
@@ -54,9 +55,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       `resolver.eth=====>>>>>>> PublicResolverAddress :(${PublicResolverAddress})...`,
     )
 
-    // 域名注册
+    // ------------------------域名注册----------------------
     const domainName = 'mydomain' // 注册域名
-    const ownerAddress = '0xb41981438e18A686E571f5f5f38eA6b357d83dfe' // 域名的所有者地址
+    const ownerAddress = deployer // 域名的所有者地址
     const duration = 31536000 // 注册时长（1年，秒为单位）
     const secret = ethers.utils.hexlify(ethers.utils.randomBytes(32)) // 防止抢注的秘密值
     const resolverAddress = PublicResolverAddress // 公共解析器的合约地址
@@ -72,7 +73,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const ret = await pr['addr(bytes32)'](
       ethers.utils.namehash(`${domainName}.eth`),
     )
-    console.log(`${domainName} :(${ret})`)
+    console.log(`${domainName} resolver address :(${ret})`)
+
+    // -----------------验证注册结果-------------------------
+    //根据反向解释器节点，获取地址的域名 addr.reverse
+    const reverseRegistrar = await ethers.getContract('ReverseRegistrar')
+    const reverseNode = await reverseRegistrar.node(ownerAddress)
+    // 获取反向解析器合约地址
+    const reverseNode_resolverAddress = await registry.resolver(reverseNode)
+    console.log('reverseNode_resolverAddress : ', reverseNode_resolverAddress)
+    const reverseNode_resolver = await (
+      await ethers.getContractFactory('PublicResolver')
+    ).attach(reverseNode_resolverAddress)
+    const ensName = await reverseNode_resolver.name(reverseNode)
+    console.log(`${ownerAddress} domain name : ${ensName}`)
   } else {
     console.log(
       'resolver.eth is not owned by the owner address, not setting resolver',
