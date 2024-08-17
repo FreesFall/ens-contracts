@@ -186,6 +186,7 @@ npm run start:hardhat
 ```
 
 测试网部署(测试网 URL:https://rpc-testnet.smartbch.org)
+
 如果需要重新部署，需要删除 deployments/smartbch-amber 指定文件夹
 
 ```
@@ -193,6 +194,7 @@ npm run deploy:smartbch-amber
 ```
 
 测试网部署/本地 hardhat 启动后，可注册域名
+
 测试网可能遇到证书问题，设置下 set NODE_TLS_REJECT_UNAUTHORIZED=0
 
 ```
